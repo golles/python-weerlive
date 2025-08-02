@@ -33,7 +33,7 @@ class WeerliveApi:
     api_key: str
 
     def __init__(self: Self, api_key: str, session: ClientSession | None = None) -> None:
-        """Initialize the Aquatlantis Ori HTTP client."""
+        """Initialize the Weerlive client."""
         self.api_key = api_key
         if session is None:
             self._session = ClientSession()
