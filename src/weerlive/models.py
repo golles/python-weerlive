@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Any
 
 from mashumaro import field_options
 from mashumaro.mixins.orjson import DataClassORJSONMixin
@@ -16,10 +17,25 @@ from .helpers import str_to_datetime, time_to_datetime
 class Response(DataClassORJSONMixin):
     """Weerlive API response."""
 
-    live: list[LiveWeather] = field(metadata=field_options(alias="liveweer"))
+    live: LiveWeather = field(metadata=field_options(alias="liveweer"))
     daily_forecast: list[DailyForecast] = field(metadata=field_options(alias="wk_verw"))
     hourly_forecast: list[HourlyForecast] = field(metadata=field_options(alias="uur_verw"))
-    api: list[ApiInfo]
+    api: ApiInfo
+
+    @classmethod
+    def __pre_deserialize__(cls, d: dict[Any, Any]) -> dict[Any, Any]:
+        """Extract single items from lists for live and api fields."""
+        result = d.copy()
+
+        # Extract first item from liveweer list
+        if "liveweer" in result and isinstance(result["liveweer"], list) and result["liveweer"]:
+            result["liveweer"] = result["liveweer"][0]
+
+        # Extract first item from api list
+        if "api" in result and isinstance(result["api"], list) and result["api"]:
+            result["api"] = result["api"][0]
+
+        return result
 
 
 @dataclass

@@ -40,9 +40,9 @@ async def test_weerlive_initialization_with_session(mock_session: ClientSession)
 async def test_deserialization_amsterdam(weerlive_api: WeerliveApi) -> None:
     """Test deserialization of Amsterdam weather data."""
     response = await weerlive_api.city("Test")
-    assert response.live[0].city == "Amsterdam"
-    assert response.live[0].temperature == 19.1
-    assert response.live[0].summary == "Zwaar bewolkt"
+    assert response.live.city == "Amsterdam"
+    assert response.live.temperature == 19.1
+    assert response.live.summary == "Zwaar bewolkt"
 
     assert response.daily_forecast[0].max_temperature == 20
     assert response.daily_forecast[0].min_temperature == 15
@@ -50,8 +50,8 @@ async def test_deserialization_amsterdam(weerlive_api: WeerliveApi) -> None:
     assert response.hourly_forecast[0].temperature == 20
     assert response.hourly_forecast[0].solar_irradiance == 704
 
-    assert response.api[0].max_requests == 300
-    assert response.api[0].remaining_requests == 0
+    assert response.api.max_requests == 300
+    assert response.api.remaining_requests == 0
 
 
 @pytest.mark.usefixtures("json_response")
@@ -59,9 +59,9 @@ async def test_deserialization_amsterdam(weerlive_api: WeerliveApi) -> None:
 async def test_deserialization_groningen(weerlive_api: WeerliveApi) -> None:
     """Test deserialization of Groningen weather data."""
     response = await weerlive_api.latitude_longitude(latitude=53.21917, longitude=6.56667)
-    assert response.live[0].city == "Groningen"
-    assert response.live[0].temperature == 18.5
-    assert response.live[0].summary == "Zwaar bewolkt"
+    assert response.live.city == "Groningen"
+    assert response.live.temperature == 18.5
+    assert response.live.summary == "Zwaar bewolkt"
 
     assert response.daily_forecast[0].max_temperature == 18
     assert response.daily_forecast[0].min_temperature == 14
@@ -69,8 +69,8 @@ async def test_deserialization_groningen(weerlive_api: WeerliveApi) -> None:
     assert response.hourly_forecast[0].temperature == 18
     assert response.hourly_forecast[0].solar_irradiance == 404
 
-    assert response.api[0].max_requests == 300
-    assert response.api[0].remaining_requests == 299
+    assert response.api.max_requests == 300
+    assert response.api.remaining_requests == 299
 
 
 @pytest.mark.usefixtures("json_response")
@@ -78,9 +78,9 @@ async def test_deserialization_groningen(weerlive_api: WeerliveApi) -> None:
 async def test_deserialization_alarm(weerlive_api: WeerliveApi) -> None:
     """Test deserialization of alarm data."""
     response = await weerlive_api.city("Test")
-    assert response.live[0].next_alert_date == datetime.datetime(2024, 2, 22, 18, 0, tzinfo=ZoneInfo(API_TIMEZONE))
-    assert response.live[0].next_alert_timestamp == 1708621200
-    assert response.live[0].next_alert_weather_code == "geel"
+    assert response.live.next_alert_date == datetime.datetime(2024, 2, 22, 18, 0, tzinfo=ZoneInfo(API_TIMEZONE))
+    assert response.live.next_alert_timestamp == 1708621200
+    assert response.live.next_alert_weather_code == "geel"
 
 
 @pytest.mark.usefixtures("json_response")

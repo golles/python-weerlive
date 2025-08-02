@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 import pytest
 
 from weerlive.const import API_TIMEZONE
-from weerlive.models import LiveWeather
+from weerlive.models import ApiInfo, DailyForecast, LiveWeather, Response
 
 
 @pytest.fixture(name="mock_live_weather")
@@ -73,3 +73,35 @@ async def test_missing_sunrise_time(mock_live_weather: LiveWeather) -> None:
         mock_datetime.now.return_value = datetime(2023, 10, 1, 12, 0, tzinfo=ZoneInfo(API_TIMEZONE))
 
         assert not mock_live_weather.is_sun_up
+
+
+async def test_response_pre_deserialize(mock_live_weather: LiveWeather) -> None:
+    """Test the __pre_deserialize__ method."""
+    mock_daily_forecast = DailyForecast(
+        day=datetime(2023, 10, 2, tzinfo=ZoneInfo(API_TIMEZONE)),
+        image="cloudy.png",
+        max_temperature=22.0,
+        min_temperature=15.0,
+        wind_speed_bft=2,
+        wind_speed_kmh=12.0,
+        wind_speed_knots=6.5,
+        wind_speed_mps=3.3,
+        wind_direction_degree=180.0,
+        wind_direction="S",
+        precipitation_probability=20,
+        sunshine_probability=70,
+    )
+
+    mock_api_info = ApiInfo(
+        source="weerlive",
+        max_requests=300,
+        remaining_requests=250,
+    )
+
+    data = {"liveweer": [mock_live_weather], "wk_verw": [mock_daily_forecast], "api": [mock_api_info]}
+
+    result = Response.__pre_deserialize__(data)
+
+    assert result["liveweer"] == mock_live_weather
+    assert result["wk_verw"] == data["wk_verw"]  # Should remain unchanged
+    assert result["api"] == mock_api_info
