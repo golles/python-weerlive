@@ -3,6 +3,7 @@
 from .api import WeerliveApi
 from .exceptions import (
     WeerliveAPIConnectionError,
+    WeerliveAPIError,
     WeerliveAPIKeyError,
     WeerliveAPIRateLimitError,
     WeerliveAPIRequestTimeoutError,
@@ -17,6 +18,7 @@ __all__ = [
     "LiveWeather",
     "Response",
     "WeerliveAPIConnectionError",
+    "WeerliveAPIError",
     "WeerliveAPIKeyError",
     "WeerliveAPIRateLimitError",
     "WeerliveAPIRequestTimeoutError",
