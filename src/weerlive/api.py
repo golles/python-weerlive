@@ -55,7 +55,7 @@ class WeerliveApi:
         try:
             async with asyncio.timeout(API_TIMEOUT):
                 response = await self._session.request("GET", url)
-                logger.info("GET request for url: %s responded with status %s", url, response.status)
+                logger.info("GET request for url: %s responded with status %s", url.path, response.status)
                 response.raise_for_status()
 
                 response_text = await response.text()
