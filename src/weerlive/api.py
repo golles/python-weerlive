@@ -44,10 +44,12 @@ class WeerliveApi:
 
     async def latitude_longitude(self: Self, latitude: float, longitude: float) -> Response:
         """Get weather data for a specific latitude and longitude."""
+        logger.info("Request for latitude and longitude")
         return await self._request(URL(API_ENDPOINT.format(self.api_key, f"{latitude},{longitude}")))
 
     async def city(self: Self, city_name: str) -> Response:
         """Get weather data for a specific city."""
+        logger.info("Request for city")
         return await self._request(URL(API_ENDPOINT.format(self.api_key, city_name)))
 
     async def _request(self: Self, url: URL) -> Response:
@@ -55,7 +57,7 @@ class WeerliveApi:
         try:
             async with asyncio.timeout(API_TIMEOUT):
                 response = await self._session.request("GET", url)
-                logger.info("GET request for url: %s responded with status %s", url, response.status)
+                logger.info("Response status: %s", response.status)
                 response.raise_for_status()
 
                 response_text = await response.text()
