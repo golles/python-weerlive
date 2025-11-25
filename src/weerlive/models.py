@@ -122,5 +122,6 @@ class ApiInfo(DataClassORJSONMixin):
     """API information."""
 
     source: str = field(metadata=field_options(alias="bron"))
+    disclaimer: str
     max_requests: int = field(metadata=field_options(alias="max_verz"))
     remaining_requests: int = field(metadata=field_options(alias="rest_verz"))

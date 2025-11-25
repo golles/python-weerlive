@@ -94,6 +94,7 @@ async def test_response_pre_deserialize(mock_live_weather: LiveWeather) -> None:
 
     mock_api_info = ApiInfo(
         source="weerlive",
+        disclaimer="foobar",
         max_requests=300,
         remaining_requests=250,
     )
