@@ -75,7 +75,6 @@ class WeerliveApi:
         except JSONDecodeError as exception:
             msg = "Error decoding JSON response from the API"
             raise WeerliveDecodeError(msg) from exception
-
         except TimeoutError as exception:
             msg = "Timeout occurred while connecting to the API"
             raise WeerliveAPIRequestTimeoutError(msg) from exception

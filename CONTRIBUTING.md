@@ -16,15 +16,6 @@ If you prefer using a local development environment, you can create a Python vir
 ./scripts/setup_env.sh
 ```
 
-### Setting Up the .env File
-
-Some of the scripts (e.g., `update_test_fixtures.py`) and examples require an existing API key. To avoid the hassle of entering an API key every time you run these scripts, you can copy `.env.sample` to `.env` and fill in your API key. The VS Code terminal should automatically source this file when a new terminal is opened when using a devcontainer.
-
-```sh
-cp .env.sample .env
-# Edit the .env file to add your API key
-```
-
 ### Pre-Commit Hook
 
 We use a [pre-commit](https://pre-commit.com) hook to help identify simple issues before submitting your code for review. This ensures that your code meets the project's quality standards and reduces the chances of encountering avoidable errors during the review process.
