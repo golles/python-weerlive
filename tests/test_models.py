@@ -40,9 +40,9 @@ def fixture_mock_live_weather() -> LiveWeather:
         alert_title="No Alerts",
         alert_text="",
         weather_code="groen",
-        next_alert_date="-",
+        next_alert_date=None,
         next_alert_timestamp=0,
-        next_alert_weather_code="-",
+        next_alert_weather_code=None,
     )
 
 
@@ -66,7 +66,7 @@ async def test_is_sun_up_property(mock_live_weather: LiveWeather, now: datetime,
 
 async def test_missing_sunrise_time(mock_live_weather: LiveWeather) -> None:
     """Test is_sun_up when sunrise time is missing."""
-    mock_live_weather.sunrise = None  # type:ignore[assignment]
+    mock_live_weather.sunrise = None
     mock_live_weather.sunset = datetime(2023, 10, 1, 18, 30, tzinfo=ZoneInfo(API_TIMEZONE))
 
     with patch("weerlive.models.datetime") as mock_datetime:

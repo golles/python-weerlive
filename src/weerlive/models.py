@@ -44,7 +44,7 @@ class LiveWeather(DataClassORJSONMixin):
 
     city: str = field(metadata=field_options(alias="plaats"))
     timestamp: int
-    time: datetime = field(metadata=field_options(deserialize=lambda time: str_to_datetime(time, "%d-%m-%Y %H:%M:%S")))
+    time: datetime | None = field(metadata=field_options(deserialize=lambda time: str_to_datetime(time, "%d-%m-%Y %H:%M:%S")))
     temperature: float = field(metadata=field_options(alias="temp"))
     feels_like_temperature: float = field(metadata=field_options(alias="gtemp"))
     summary: str = field(metadata=field_options(alias="samenv"))
@@ -61,16 +61,18 @@ class LiveWeather(DataClassORJSONMixin):
     visibility: int = field(metadata=field_options(alias="zicht"))
     solar_irradiance: int = field(metadata=field_options(alias="gr"))
     forecast: str = field(metadata=field_options(alias="verw"))
-    sunrise: datetime = field(metadata=field_options(alias="sup", deserialize=time_to_datetime))
-    sunset: datetime = field(metadata=field_options(alias="sunder", deserialize=time_to_datetime))
+    sunrise: datetime | None = field(metadata=field_options(alias="sup", deserialize=time_to_datetime))
+    sunset: datetime | None = field(metadata=field_options(alias="sunder", deserialize=time_to_datetime))
     image: str = field(metadata=field_options(alias="image"))
     alert: int = field(metadata=field_options(alias="alarm"))
     alert_title: str = field(metadata=field_options(alias="lkop"))
     alert_text: str = field(metadata=field_options(alias="ltekst"))
     weather_code: str = field(metadata=field_options(alias="wrschklr"))
-    next_alert_date: str = field(metadata=field_options(alias="wrsch_g", deserialize=lambda date: str_to_datetime(date, "%d-%m-%Y %H:%M")))
+    next_alert_date: datetime | None = field(
+        metadata=field_options(alias="wrsch_g", deserialize=lambda date: str_to_datetime(date, "%d-%m-%Y %H:%M")),
+    )
     next_alert_timestamp: int = field(metadata=field_options(alias="wrsch_gts"))
-    next_alert_weather_code: str = field(metadata=field_options(alias="wrsch_gc", deserialize=lambda code: None if code == "-" else code))
+    next_alert_weather_code: str | None = field(metadata=field_options(alias="wrsch_gc", deserialize=lambda code: None if code == "-" else code))
 
     @property
     def is_sun_up(self) -> bool:
@@ -78,14 +80,18 @@ class LiveWeather(DataClassORJSONMixin):
         if not self.sunrise or not self.sunset:
             return False
 
-        return self.sunrise <= datetime.now(tz=self.sunrise.tzinfo) <= self.sunset
+        # Compare on time-of-day so the result stays correct even when the
+        # sunrise/sunset values (stamped with the parse-time date) are reused
+        # across a day boundary.
+        now = datetime.now(tz=self.sunrise.tzinfo).time()
+        return self.sunrise.time() <= now <= self.sunset.time()
 
 
 @dataclass
 class DailyForecast(DataClassORJSONMixin):
     """Daily weather forecast data."""
 
-    day: datetime = field(metadata=field_options(alias="dag", deserialize=lambda day: str_to_datetime(day, "%d-%m-%Y")))
+    day: datetime | None = field(metadata=field_options(alias="dag", deserialize=lambda day: str_to_datetime(day, "%d-%m-%Y")))
     image: str = field(metadata=field_options(alias="image"))
     max_temperature: float = field(metadata=field_options(alias="max_temp"))
     min_temperature: float = field(metadata=field_options(alias="min_temp"))
@@ -103,7 +109,7 @@ class DailyForecast(DataClassORJSONMixin):
 class HourlyForecast(DataClassORJSONMixin):
     """Hourly weather forecast data."""
 
-    time: datetime = field(metadata=field_options(alias="uur", deserialize=lambda time: str_to_datetime(time, "%d-%m-%Y %H:%M")))
+    time: datetime | None = field(metadata=field_options(alias="uur", deserialize=lambda time: str_to_datetime(time, "%d-%m-%Y %H:%M")))
     timestamp: int
     image: str = field(metadata=field_options(alias="image"))
     temperature: float = field(metadata=field_options(alias="temp"))

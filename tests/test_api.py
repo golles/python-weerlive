@@ -14,10 +14,10 @@ from weerlive import WeerliveApi
 from weerlive.const import API_TIMEZONE
 from weerlive.exceptions import (
     WeerliveAPIConnectionError,
+    WeerliveAPIDecodeError,
     WeerliveAPIKeyError,
     WeerliveAPIRateLimitError,
     WeerliveAPIRequestTimeoutError,
-    WeerliveDecodeError,
 )
 
 
@@ -103,7 +103,7 @@ async def test_rate_limit(weerlive_api: WeerliveApi) -> None:
 @pytest.mark.parametrize("json_response", ["invalid.json"], indirect=True)
 async def test_invalid_json(weerlive_api: WeerliveApi) -> None:
     """Test deserialization of invalid weather data."""
-    with pytest.raises(WeerliveDecodeError):
+    with pytest.raises(WeerliveAPIDecodeError):
         await weerlive_api.city("Test")
 
 
