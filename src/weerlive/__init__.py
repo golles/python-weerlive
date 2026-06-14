@@ -3,11 +3,11 @@
 from .api import WeerliveApi
 from .exceptions import (
     WeerliveAPIConnectionError,
+    WeerliveAPIDecodeError,
     WeerliveAPIError,
     WeerliveAPIKeyError,
     WeerliveAPIRateLimitError,
     WeerliveAPIRequestTimeoutError,
-    WeerliveDecodeError,
 )
 from .models import ApiInfo, DailyForecast, HourlyForecast, LiveWeather, Response
 
@@ -18,10 +18,10 @@ __all__ = [
     "LiveWeather",
     "Response",
     "WeerliveAPIConnectionError",
+    "WeerliveAPIDecodeError",
     "WeerliveAPIError",
     "WeerliveAPIKeyError",
     "WeerliveAPIRateLimitError",
     "WeerliveAPIRequestTimeoutError",
     "WeerliveApi",
-    "WeerliveDecodeError",
 ]

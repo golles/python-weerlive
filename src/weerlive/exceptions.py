@@ -21,5 +21,5 @@ class WeerliveAPIRequestTimeoutError(WeerliveAPIError):
     """Exception raised for request timeouts."""
 
 
-class WeerliveDecodeError(WeerliveAPIError):
+class WeerliveAPIDecodeError(WeerliveAPIError):
     """Exception raised for errors decoding the API response."""

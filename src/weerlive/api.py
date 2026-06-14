@@ -15,10 +15,10 @@ from yarl import URL
 from .const import API_ENDPOINT, API_TIMEOUT
 from .exceptions import (
     WeerliveAPIConnectionError,
+    WeerliveAPIDecodeError,
     WeerliveAPIKeyError,
     WeerliveAPIRateLimitError,
     WeerliveAPIRequestTimeoutError,
-    WeerliveDecodeError,
 )
 from .models import Response
 
@@ -74,7 +74,7 @@ class WeerliveApi:
                 return Response.from_json(response_text)
         except JSONDecodeError as exception:
             msg = "Error decoding JSON response from the API"
-            raise WeerliveDecodeError(msg) from exception
+            raise WeerliveAPIDecodeError(msg) from exception
         except TimeoutError as exception:
             msg = "Timeout occurred while connecting to the API"
             raise WeerliveAPIRequestTimeoutError(msg) from exception
