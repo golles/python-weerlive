@@ -2,7 +2,7 @@
 # pylint: disable=protected-access
 
 import asyncio
-import datetime
+import datetime as dt
 import socket
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
@@ -78,7 +78,7 @@ async def test_deserialization_groningen(weerlive_api: WeerliveApi) -> None:
 async def test_deserialization_alarm(weerlive_api: WeerliveApi) -> None:
     """Test deserialization of alarm data."""
     response = await weerlive_api.city("Test")
-    assert response.live.next_alert_date == datetime.datetime(2024, 2, 22, 18, 0, tzinfo=ZoneInfo(API_TIMEZONE))
+    assert response.live.next_alert_date == dt.datetime(2024, 2, 22, 18, 0, tzinfo=ZoneInfo(API_TIMEZONE))
     assert response.live.next_alert_timestamp == 1708621200
     assert response.live.next_alert_weather_code == "geel"
 
