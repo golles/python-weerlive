@@ -1,5 +1,6 @@
 """Weerlive API helper functions."""
 
+import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -32,3 +33,17 @@ def time_to_datetime(time: str) -> datetime | None:
         return now.replace(hour=hour, minute=minute, second=0, microsecond=0)
     except ValueError:
         return None
+
+
+def api_error_message(response_text: str) -> str | None:
+    """Return the error message when the API responds with `{"liveweer": [{"fout": "..."}]}` instead of weather data."""
+    if '"fout"' not in response_text:
+        return None
+    try:
+        data = json.loads(response_text)
+    except json.JSONDecodeError:
+        return None
+    live = data.get("liveweer") if isinstance(data, dict) else None
+    if isinstance(live, list) and live and isinstance(live[0], dict) and "fout" in live[0]:
+        return str(live[0]["fout"])
+    return None

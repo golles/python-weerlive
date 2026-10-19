@@ -8,6 +8,7 @@ from .exceptions import (
     WeerliveAPIKeyError,
     WeerliveAPIRateLimitError,
     WeerliveAPIRequestTimeoutError,
+    WeerliveAPIResponseError,
 )
 from .models import ApiInfo, DailyForecast, HourlyForecast, LiveWeather, Response
 
@@ -23,5 +24,6 @@ __all__ = [
     "WeerliveAPIKeyError",
     "WeerliveAPIRateLimitError",
     "WeerliveAPIRequestTimeoutError",
+    "WeerliveAPIResponseError",
     "WeerliveApi",
 ]

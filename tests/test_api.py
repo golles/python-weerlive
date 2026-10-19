@@ -18,6 +18,7 @@ from weerlive.exceptions import (
     WeerliveAPIKeyError,
     WeerliveAPIRateLimitError,
     WeerliveAPIRequestTimeoutError,
+    WeerliveAPIResponseError,
 )
 
 
@@ -97,6 +98,14 @@ async def test_rate_limit(weerlive_api: WeerliveApi) -> None:
     """Test rate limit."""
     with pytest.raises(WeerliveAPIRateLimitError):
         await weerlive_api.city("Test")
+
+
+@pytest.mark.usefixtures("json_response")
+@pytest.mark.parametrize("json_response", ["error.json"], indirect=True)
+async def test_api_error_message(weerlive_api: WeerliveApi) -> None:
+    """Test an error message returned by the API."""
+    with pytest.raises(WeerliveAPIResponseError, match="Met de demo-key kun je alleen weergegevens van Amsterdam opvragen"):
+        await weerlive_api.city("Utrecht")
 
 
 @pytest.mark.usefixtures("json_response")

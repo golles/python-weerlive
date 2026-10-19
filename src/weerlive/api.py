@@ -19,7 +19,9 @@ from .exceptions import (
     WeerliveAPIKeyError,
     WeerliveAPIRateLimitError,
     WeerliveAPIRequestTimeoutError,
+    WeerliveAPIResponseError,
 )
+from .helpers import api_error_message
 from .models import Response
 
 logger = logging.getLogger(__name__)
@@ -70,6 +72,11 @@ class WeerliveApi:
                 if "Dagelijkse limiet" in response_text:
                     msg = "API key daily limit exceeded, try again tomorrow"
                     raise WeerliveAPIRateLimitError(msg)
+                # Any other refusal also comes as a 200, with the reason in a "fout" field. Without this check it
+                # would surface as an unreadable deserialization error and the reason would be lost.
+                if error_message := api_error_message(response_text):
+                    msg = f"The API returned an error: {error_message}"
+                    raise WeerliveAPIResponseError(msg)
 
                 return Response.from_json(response_text)
         except JSONDecodeError as exception:

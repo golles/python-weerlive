@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 import pytest
 
 from weerlive.const import API_TIMEZONE
-from weerlive.helpers import str_to_datetime, time_to_datetime
+from weerlive.helpers import api_error_message, str_to_datetime, time_to_datetime
 
 
 @pytest.mark.parametrize(
@@ -98,3 +98,18 @@ def test_time_to_datetime_preserves_date() -> None:
         assert result.minute == 30
         assert result.second == 0
         assert result.microsecond == 0
+
+
+@pytest.mark.parametrize(
+    ("response_text", "expected_result"),
+    [
+        ('{"liveweer": [{"fout": "Locatie onbekend"}]}', "Locatie onbekend"),
+        ('{"liveweer": [{"plaats": "Amsterdam"}]}', None),
+        ('{"liveweer": []}', None),
+        ('[{"fout": "Locatie onbekend"}]', None),
+        ('{"liveweer": [{"fout": "Locatie onbekend"', None),
+    ],
+)
+def test_api_error_message(response_text: str, expected_result: str | None) -> None:
+    """Test api_error_message function with various inputs."""
+    assert api_error_message(response_text) == expected_result
