@@ -9,6 +9,7 @@ from json import JSONDecodeError
 from types import TracebackType
 from typing import Self
 
+import orjson
 from aiohttp.client import ClientError, ClientResponseError, ClientSession
 from yarl import URL
 
@@ -21,10 +22,28 @@ from .exceptions import (
     WeerliveAPIRequestTimeoutError,
     WeerliveAPIResponseError,
 )
-from .helpers import api_error_message
 from .models import Response
 
 logger = logging.getLogger(__name__)
+
+
+def _api_error_message(response_text: str) -> str | None:
+    """Return the error message when the API responds with an error instead of weather data.
+
+    The reason is in `{"liveweer": [{"fout": "..."}]}`. Returns the message when a "fout" field is
+    present (an empty string when it is empty or null), or None when there is no error field at all.
+    """
+    if '"fout"' not in response_text:
+        return None
+    try:
+        data = orjson.loads(response_text)
+    except orjson.JSONDecodeError:
+        return None
+    live = data.get("liveweer") if isinstance(data, dict) else None
+    if isinstance(live, list) and live and isinstance(live[0], dict) and "fout" in live[0]:
+        fout = live[0]["fout"]
+        return str(fout) if fout else ""
+    return None
 
 
 class WeerliveApi:
@@ -74,8 +93,8 @@ class WeerliveApi:
                     raise WeerliveAPIRateLimitError(msg)
                 # Any other refusal also comes as a 200, with the reason in a "fout" field. Without this check it
                 # would surface as an unreadable deserialization error and the reason would be lost.
-                if error_message := api_error_message(response_text):
-                    msg = f"The API returned an error: {error_message}"
+                if (error_message := _api_error_message(response_text)) is not None:
+                    msg = f"The API returned an error: {error_message or 'unknown error'}"
                     raise WeerliveAPIResponseError(msg)
 
                 return Response.from_json(response_text)
