@@ -23,3 +23,7 @@ class WeerliveAPIRequestTimeoutError(WeerliveAPIError):
 
 class WeerliveAPIDecodeError(WeerliveAPIError):
     """Exception raised for errors decoding the API response."""
+
+
+class WeerliveAPIResponseError(WeerliveAPIError):
+    """Exception raised when the API responds with an error message instead of weather data."""

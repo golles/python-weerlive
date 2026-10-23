@@ -1,0 +1,7 @@
+{
+  "liveweer": [
+    {
+      "fout": "Met de demo-key kun je alleen weergegevens van Amsterdam opvragen. Vraag een API-key aan voor de weergegevens van plaatsen in heel Nederland."
+    }
+  ]
+}

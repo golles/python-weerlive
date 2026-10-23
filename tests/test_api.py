@@ -11,6 +11,7 @@ import pytest
 from aiohttp.client import ClientError, ClientResponseError, ClientSession
 
 from weerlive import WeerliveApi
+from weerlive.api import _api_error_message
 from weerlive.const import API_TIMEZONE
 from weerlive.exceptions import (
     WeerliveAPIConnectionError,
@@ -18,6 +19,7 @@ from weerlive.exceptions import (
     WeerliveAPIKeyError,
     WeerliveAPIRateLimitError,
     WeerliveAPIRequestTimeoutError,
+    WeerliveAPIResponseError,
 )
 
 
@@ -97,6 +99,39 @@ async def test_rate_limit(weerlive_api: WeerliveApi) -> None:
     """Test rate limit."""
     with pytest.raises(WeerliveAPIRateLimitError):
         await weerlive_api.city("Test")
+
+
+@pytest.mark.usefixtures("json_response")
+@pytest.mark.parametrize("json_response", ["error.json"], indirect=True)
+async def test_api_error_message(weerlive_api: WeerliveApi) -> None:
+    """Test an error message returned by the API."""
+    with pytest.raises(WeerliveAPIResponseError, match="Met de demo-key kun je alleen weergegevens van Amsterdam opvragen"):
+        await weerlive_api.city("Utrecht")
+
+
+@pytest.mark.usefixtures("json_response")
+@pytest.mark.parametrize("json_response", ["error-empty.json", "error-null.json"], indirect=True)
+async def test_api_error_message_without_reason(weerlive_api: WeerliveApi) -> None:
+    """Test that an empty or null error field still raises, with a generic message."""
+    with pytest.raises(WeerliveAPIResponseError, match="unknown error"):
+        await weerlive_api.city("Utrecht")
+
+
+@pytest.mark.parametrize(
+    ("response_text", "expected_result"),
+    [
+        ('{"liveweer": [{"fout": "Locatie onbekend"}]}', "Locatie onbekend"),
+        ('{"liveweer": [{"fout": ""}]}', ""),
+        ('{"liveweer": [{"fout": null}]}', ""),
+        ('{"liveweer": [{"plaats": "Amsterdam"}]}', None),
+        ('{"liveweer": []}', None),
+        ('[{"fout": "Locatie onbekend"}]', None),
+        ('{"liveweer": [{"fout": "Locatie onbekend"', None),
+    ],
+)
+def test_api_error_message_parser(response_text: str, expected_result: str | None) -> None:
+    """Test the _api_error_message parser with various inputs."""
+    assert _api_error_message(response_text) == expected_result
 
 
 @pytest.mark.usefixtures("json_response")
